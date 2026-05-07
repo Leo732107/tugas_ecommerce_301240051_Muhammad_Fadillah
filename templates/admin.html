@@ -1,0 +1,158 @@
+<!-- templates/admin.html -->
+
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h2 class="fw-bold mb-4">
+ADMIN DASHBOARD
+</h2>
+
+<div class="row">
+
+<!-- FORM -->
+
+<div class="col-12 col-lg-5 mb-4">
+
+<div class="card p-4">
+
+<h4 class="mb-3">
+Tambah Produk
+</h4>
+
+<form method="POST"
+action="/add_product"
+enctype="multipart/form-data">
+
+<div class="mb-3">
+
+<input type="text"
+name="nama"
+class="form-control"
+placeholder="Nama Produk"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<input type="number"
+name="harga"
+class="form-control"
+placeholder="Harga"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<input type="number"
+name="stok"
+class="form-control"
+placeholder="Stok"
+required>
+
+</div>
+
+<div class="mb-3">
+
+<textarea name="deskripsi"
+class="form-control"
+placeholder="Deskripsi"
+required></textarea>
+
+</div>
+
+<div class="mb-3">
+
+<input type="file"
+name="gambar"
+class="form-control"
+required>
+
+</div>
+
+<button class="btn btn-custom w-100">
+
+Upload Produk
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- TABLE -->
+
+<div class="col-12 col-lg-7">
+
+<div class="card p-4">
+
+<h4 class="mb-3">
+Data Pesanan
+</h4>
+
+<div class="table-responsive">
+
+<table class="table">
+
+<tr>
+
+<th>ID</th>
+<th>Nama</th>
+<th>Status</th>
+<th>Aksi</th>
+
+</tr>
+
+{% for order in orders %}
+
+<tr>
+
+<td>{{ order.id }}</td>
+<td>{{ order.nama_pembeli }}</td>
+<td>{{ order.status }}</td>
+
+<td>
+
+<form method="POST"
+action="/update_status/{{ order.id }}">
+
+<select name="status"
+class="form-select mb-2">
+
+<option>Sedang Diproses</option>
+<option>Dikemas</option>
+<option>Dikirim</option>
+<option>Dalam Perjalanan</option>
+<option>Paket Diterima</option>
+
+</select>
+
+<button class="btn btn-light btn-sm">
+
+Update
+
+</button>
+
+</form>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

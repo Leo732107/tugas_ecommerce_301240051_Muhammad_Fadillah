@@ -1,0 +1,53 @@
+<!-- templates/detail.html -->
+
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div class="row align-items-center">
+
+<div class="col-12 col-lg-6 mb-4">
+
+<img src="{{ url_for('static',
+filename='uploads/' + product.gambar) }}"
+class="img-fluid rounded">
+
+</div>
+
+<div class="col-12 col-lg-6 mb-4">
+
+<h1 class="fw-bold">
+{{ product.nama }}
+</h1>
+
+<h2 class="mb-3">
+Rp {{ product.harga }}
+</h2>
+
+<p>
+{{ product.deskripsi }}
+</p>
+
+<p>
+Stok : {{ product.stok }}
+</p>
+
+<a href="/add_to_cart/{{ product.id }}"
+class="btn btn-custom w-100 mb-3">
+
++ Tambah Ke Keranjang
+
+</a>
+
+<a href="/checkout"
+class="btn btn-outline-light w-100">
+
+Checkout Sekarang
+
+</a>
+
+</div>
+
+</div>
+
+{% endblock %}
