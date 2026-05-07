@@ -6,9 +6,14 @@ import os
 
 app = Flask(__name__)
 
+# ==================================================
+# CONFIG
+# ==================================================
+
 app.config['SECRET_KEY'] = 'secretkey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ecommerce.db'
 app.config['UPLOAD_FOLDER'] = 'static/uploads'
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 db = SQLAlchemy(app)
 
@@ -47,7 +52,7 @@ def index():
     )
 
 # ==================================================
-# DETAIL
+# DETAIL PRODUK
 # ==================================================
 
 @app.route('/product/<int:id>')
@@ -61,7 +66,7 @@ def product_detail(id):
     )
 
 # ==================================================
-# CART
+# ADD TO CART
 # ==================================================
 
 @app.route('/add_to_cart/<int:id>')
@@ -80,11 +85,16 @@ def add_to_cart(id):
     }
 
     session['cart'].append(item)
+
     session.modified = True
 
-    flash('Produk masuk ke keranjang!', 'success')
+    flash('Produk berhasil ditambahkan ke keranjang!', 'success')
 
     return redirect(url_for('cart'))
+
+# ==================================================
+# CART
+# ==================================================
 
 @app.route('/cart')
 def cart():
@@ -99,6 +109,10 @@ def cart():
         total=total
     )
 
+# ==================================================
+# REMOVE CART
+# ==================================================
+
 @app.route('/remove_cart/<int:index>')
 def remove_cart(index):
 
@@ -109,7 +123,7 @@ def remove_cart(index):
 
     session['cart'] = cart
 
-    flash('Produk dihapus!', 'danger')
+    flash('Produk dihapus dari keranjang!', 'danger')
 
     return redirect(url_for('cart'))
 
@@ -167,13 +181,14 @@ def orders():
     )
 
 # ==================================================
-# ADMIN
+# ADMIN DASHBOARD
 # ==================================================
 
 @app.route('/admin')
 def admin():
 
     products = Product.query.all()
+
     orders = Order.query.all()
 
     return render_template(
@@ -197,6 +212,10 @@ def add_product():
     file = request.files['gambar']
 
     filename = secure_filename(file.filename)
+
+    if filename == '':
+        flash('Gambar belum dipilih!', 'danger')
+        return redirect(url_for('admin'))
 
     filepath = os.path.join(
         app.config['UPLOAD_FOLDER'],
@@ -233,20 +252,25 @@ def update_status(id):
 
     db.session.commit()
 
-    flash('Status berhasil diupdate!', 'success')
+    flash('Status pesanan berhasil diperbarui!', 'success')
 
     return redirect(url_for('admin'))
 
 # ==================================================
-# RUN
+# MAIN
 # ==================================================
+
+if not os.path.exists('static/uploads'):
+    os.makedirs('static/uploads')
+
+with app.app_context():
+    db.create_all()
 
 if __name__ == '__main__':
 
-    if not os.path.exists('static/uploads'):
-        os.makedirs('static/uploads')
+    port = int(os.environ.get("PORT", 5000))
 
-    with app.app_context():
-        db.create_all()
-
-    app.run(debug=True)
+    app.run(
+        host='0.0.0.0',
+        port=port
+    )
